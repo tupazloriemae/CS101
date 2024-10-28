@@ -1,0 +1,204 @@
+---
+title: "RWorksheet#4b"
+author: "Lorie Mae Tupaz"
+date: "2024-10-28"
+output: pdf_document
+---
+
+
+```{r}
+# 1
+matrix_result <- matrix(0, nrow = 5, ncol = 5)
+A <- c(1, 2, 3, 4, 5)
+for (i in 1:5) {
+  for (j in 1:5) {
+    matrix_result[i, j] <- abs(i - j)
+  }
+}
+
+matrix_result
+
+```
+
+
+
+
+```{r}
+# 2
+for (i in 1:5) {
+  cat(rep("* ", i), "\n")
+}
+```
+
+
+
+
+```{r}
+
+first <- 5
+
+if (is.na(first) || first <= 0) {
+  stop("Please provide a valid positive integer.")
+}
+
+fibonacci <- c(first)
+cat(fibonacci[1], "")
+
+repeat {
+  if (length(fibonacci) < 2) {
+    next_num <- fibonacci[1]
+  } else {
+    next_num <- sum(tail(fibonacci, 2))
+  }
+  
+  if (next_num > 500) break
+  
+  cat(next_num, "")
+  fibonacci <- c(fibonacci, next_num)
+}
+
+```
+
+
+
+
+```{r}
+# 4a
+directory_path <- "C:/Users/Client/OneDrive/Documents/CS101/RWorksheet#4/RWorksheet#4b"
+data <- read.csv(file.path(directory_path, "sample_data.csv"))
+print(head(data))
+
+femdata <- subset(data, Gender == "F")
+maledata <- subset(data, Gender == "M")
+cat("Female count:", nrow(femdata), "\n")
+cat("Male count:", nrow(maledata), "\n")
+
+gender_count <- table(data$Gender)
+barplot(gender_count, main = "Gender Distribution", col = c("pink", "blue"), 
+        xlab = "Gender", ylab = "Count", legend = TRUE)
+
+```
+
+
+
+
+
+```{r}
+# 5
+expenses <- c(Food = 60, Electricity = 10, Savings = 5, Miscellaneous = 25)
+percent <- paste0(names(expenses),"(", round(100*expenses / sum(expenses), 1), "%)")
+pie(expenses, labels= percent, col = c("yellow", "green", "red", "blue"), main = "Monthly Family Expenses")
+```
+```{r}
+# 6a
+data(iris)
+str(iris)
+
+# 6b
+mean_values <- colMeans(iris[, c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")])
+mean_values
+
+# 6c
+species_counts <- table(iris$Species)
+pie(species_counts, main="Species Distribution", col=c("lightblue", "lightgreen", "lightpink"), 
+    labels=names(species_counts))
+
+# 6d
+setosa <- subset(iris, Species == "setosa")
+versicolor <- subset(iris, Species == "versicolor")
+virginica <- subset(iris, Species == "virginica")
+
+# Show last 6 rows of each subset
+tail(setosa, 6)
+tail(versicolor, 6)
+tail(virginica, 6)
+
+# 6e
+iris$Species <- as.factor(iris$Species)
+plot(iris$Sepal.Length, iris$Sepal.Width,
+     col = iris$Species,
+     pch = as.numeric(iris$Species) + 14, # Different symbols by species
+     main = "Iris Dataset",
+     sub = "Sepal width and length",
+     xlab = "Sepal Length",
+     ylab = "Sepal Width")
+
+legend("topright", legend = levels(iris$Species), col = 1:3, pch = 15:17)
+
+# 6f
+#In this plot, we can observe the classification of species based on sepal dimensions. Example, Setosa species might appear separated from Versicolor and Virginica based on sepal width and length. This visual difference indicates that these features can help classification between species.
+```
+
+
+
+
+
+
+```{r}
+# 7
+options(repos = c(CRAN = "https://cran.rstudio.com/"))
+install.packages("readxl")
+library(readxl)
+
+data <- read_excel("C:/Users/Client/OneDrive/Documents/CS101/RWorksheet#4/RWorksheet#4b/alexa_file.xlsx")
+View(data)
+
+data$variation <- gsub("Old Name", "New Name", data$variation)
+data$variation <- gsub("Black", "Charcoal Fabric", data$variation)
+
+# Check for image file existence
+image_path <- "C:/CS101/Worksheet4/imaget4b/data_cs101.png"
+if (file.exists(image_path)) {
+  knitr::include_graphics(image_path)
+} else {
+  cat("Image file not found at:", image_path, "\n")
+}
+
+install.packages("dplyr")
+library(dplyr)
+
+variation_counts <- data %>%
+  count(variation)
+
+save(variation_counts, file = "variations.RData")
+
+variation_counts
+
+load("variations.RData")
+
+barplot(variation_counts$n, names.arg = variation_counts$variation,
+        col = rainbow(length(variation_counts$variation)),
+        main = "Total Counts of Variations",
+        xlab = "Variations",
+        ylab = "Count")
+
+black_variants <- variation_counts %>% filter(grepl("Black", variation))
+white_variants <- variation_counts %>% filter(grepl("White", variation))
+
+par(mfrow = c(1, 2))
+
+if (nrow(black_variants) > 0) {
+    barplot(black_variants$n, names.arg = black_variants$variation,
+            col = rainbow(length(black_variants$variation)),
+            main = "Black Variants",
+            xlab = "Total Numbers",
+            ylab = "Variants")
+} else {
+    plot.new()
+    title(main = "No Black Variants Found")
+}
+
+if (nrow(white_variants) > 0) {
+    barplot(white_variants$n, names.arg = white_variants$variation,
+            col = rainbow(length(white_variants$variation)),
+            main = "White Variants",
+            xlab = "Total Numbers",
+            ylab = "Variants")
+} else {
+    plot.new()
+    title(main = "No White Variants Found")
+}
+
+```
+
+
