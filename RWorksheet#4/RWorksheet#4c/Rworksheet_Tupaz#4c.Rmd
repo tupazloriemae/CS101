@@ -1,0 +1,400 @@
+---
+title: "RWorksheet_Tupaz#4c"
+author: "Lorie Mae Tupaz"
+date: "2024-11-07"
+output: pdf_document
+---
+  
+```{r}
+# 1.a
+library(ggplot2)
+data(mpg)
+str(mpg)
+
+
+
+# 1.b
+#b. Categorical variables: manufacturer, model, trans, drv, fl, class, cyl
+
+
+# 1.c
+# Continuous variables: displ, year, cty, hwy
+```
+
+
+
+```{r}
+
+#2.a
+library(dplyr)
+
+# Group by manufacturer and count unique models
+manufacturer_models <- mpg %>%
+  group_by(manufacturer) %>%
+  summarise(unique_models = n_distinct(model)) %>%
+  arrange(desc(unique_models))
+
+# Display the result
+print(manufacturer_models)
+
+
+
+
+#2.b
+# plot()
+manufacturer_models$manufacturer <- factor(manufacturer_models$manufacturer, 
+                                           levels = manufacturer_models$manufacturer[order(-manufacturer_models$unique_models)])
+
+# Bar plot using base R plot function
+barplot(manufacturer_models$unique_models, names.arg = manufacturer_models$manufacturer, 
+        las = 2, col = "yellow", main = "Unique Models per Manufacturer", 
+        ylab = "Number of Unique Models", cex.names = 0.7)
+
+
+
+
+#ggplot()
+library(ggplot2)
+
+# Plotting with ggplot2
+ggplot(manufacturer_models, aes(x = manufacturer, y = unique_models)) +
+  geom_bar(stat = "identity", fill = "pink") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "Unique Models per Manufacturer", x = "Manufacturer", y = "Number of Unique Models")
+
+
+
+
+```
+
+
+
+
+
+```{r}
+# 2. Showing the Relationship Between the Model and Manufacturer
+
+#2.a
+# This plot shows the relationship between the model and the manufacturer. Each point represents a unique combination of a model and its corresponding manufacturer.
+ggplot(mpg, aes(x = model, y = manufacturer)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "Model vs Manufacturer", 
+       x = "Model", 
+       y = "Manufacturer")
+
+
+# 2.b
+# This plot might not be very useful if there are many models and manufacturers, as the points will likely overlap, making it hard to read. You could improve the visualization by:
+#Using geom_jitter() to spread the points slightly and reduce overlap.
+#Filtering the data to show only the most common manufacturers or models.
+#Adding more informative aesthetics, such as color or size, based on another variable like displ or hwy from the mpg dataset.
+
+ggplot(mpg, aes(x = model, y = manufacturer)) +
+  geom_jitter(width = 0.1, height = 0.1, alpha = 0.5) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "Jittered Model vs Manufacturer", 
+       x = "Model", 
+       y = "Manufacturer")
+
+
+
+
+```
+
+
+
+```{r}
+#3
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+
+# Select the top 20 observations from the mpg dataset
+top_20_mpg <- mpg %>%
+  slice_head(n = 20)  # or you can use head(mpg, 20)
+
+# Create a scatter plot of model vs. year for the top 20 observations
+ggplot(top_20_mpg, aes(x = year, y = model)) +
+  geom_point(color = "orange", size = 3) +
+  labs(title = "Top 20 Models by Year",
+       x = "Year",
+       y = "Model") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+
+
+
+```{r}
+#4
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+
+# Group by model and count the number of cars per model
+model_count <- mpg %>%
+  group_by(model) %>%
+  summarise(num_cars = n()) %>%
+  arrange(desc(num_cars))
+
+# Display the result
+print(model_count)
+
+# Create a dataset for the top 20 models by number of cars
+top_20_mpg <- model_count %>%
+  head(20)
+
+
+
+
+# 4.a - Plot using geom_bar() for the top 20 observations (Vertical Bar Plot)
+ggplot(top_20_mpg, aes(x = reorder(model, -num_cars), y = num_cars)) +
+  geom_bar(stat = "identity", fill = "black") +
+  labs(title = "Top 20 Models by Number of Cars",
+       x = "Model",
+       y = "Number of Cars") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+
+
+
+# 4.b - Plot using geom_bar() + coord_flip() for the top 20 observations (Horizontal Bar Plot)
+ggplot(top_20_mpg, aes(x = reorder(model, num_cars), y = num_cars)) +
+  geom_bar(stat = "identity", fill = "navy") +
+  labs(title = "Top 20 Models by Number of Cars (Horizontal)",
+       x = "Number of Cars",
+       y = "Model") +
+  coord_flip() +
+  theme_minimal()
+
+
+```
+
+
+
+
+
+```{r}
+
+# 5
+library(ggplot2)
+
+# Create the scatter plot
+ggplot(mpg, aes(x = cyl, y = displ, color = displ)) +
+  geom_point(size = 3, alpha = 0.7) +  # Adjust size and transparency of points
+  labs(title = "Relationship between No. of Cylinders and Engine Displacement",
+       x = "Number of Cylinders",
+       y = "Engine Displacement (L)") +
+  scale_color_gradient(low = "violet", high = "pink") +  # Color gradient from blue to red
+  theme_minimal()
+
+```
+
+
+
+
+```{r}
+
+
+#6
+library(ggplot2)
+
+# Create the scatter plot for displ vs hwy, mapping color to cyl
+ggplot(mpg, aes(x = displ, y = hwy, color = as.factor(cyl))) +
+  geom_point(size = 3, alpha = 0.7) +  # Adjust size and transparency of points
+  labs(title = "Relationship between Engine Displacement and Highway MPG",
+       x = "Engine Displacement (L)",
+       y = "Highway MPG",
+       color = "Number of Cylinders") +
+  theme_minimal()
+
+
+
+#6.a
+setwd("C:/Users/Juralin/OneDrive/Documents")
+
+# Use the absolute file path directly
+traffic <- read.csv("C:/Users/Juralin/OneDrive/Documents/traffic.csv")
+
+
+# Check if the file loaded successfully
+head(traffic)
+
+# Check the number of rows (observations) and the column names of the dataset
+num_observations <- nrow(traffic)
+variables <- colnames(traffic)
+
+# Print the results
+cat("Number of observations:", num_observations, "\n")
+cat("Variables in the dataset:", paste(variables, collapse = ", "), "\n")
+
+
+
+
+#6.b
+traffic <- read.csv("C:/Users/Juralin/OneDrive/Documents/traffic.csv")
+
+# Step 2: Check the first few rows of the dataset to understand its structure
+head(traffic)
+
+# Step 3: Check the column names to see which columns are available
+colnames(traffic)
+
+# Step 4: Subset the dataset based on an existing column
+# Since there's no 'junction' column, let's try splitting by 'Time' or 'Vehicles'
+# Let's first try splitting by 'Time' (or you can change to 'Vehicles' if needed)
+
+# Check if 'Time' exists in the dataset
+if("Time" %in% colnames(traffic)) {
+  # Split the dataset by the 'Time' column
+  time_subset <- split(traffic, traffic$Time)
+  
+  # Display a sample output of the subset for one of the time categories
+  cat("Sample output for Time=1:\n")
+  head(time_subset[[1]])  # Replace '1' with the relevant value if necessary
+} else {
+  cat("Column 'Time' does not exist in the dataset.\n")
+}
+
+# Alternatively, you can try splitting by 'Vehicles' if 'Time' is not suitable
+if("Vehicles" %in% colnames(traffic)) {
+  # Split the dataset by the 'Vehicles' column
+  vehicles_subset <- split(traffic, traffic$Vehicles)
+  
+  # Display a sample output of the subset for one of the vehicle categories
+  cat("Sample output for Vehicles=50:\n")
+  head(vehicles_subset[[1]])  # Replace '50' with the relevant value if necessary
+} else {
+  cat("Column 'Vehicles' does not exist in the dataset.\n")
+}
+
+
+
+
+
+
+
+#6.c
+library(ggplot2)
+
+# Check the column names to ensure they are correct
+colnames(traffic)
+
+# Create a basic line plot for 'Time' vs. 'Vehicles'
+ggplot(traffic, aes(x = Time, y = Vehicles)) + 
+  geom_line() +
+  labs(title = "Traffic Volume Over Time", x = "Time", y = "Vehicles")
+
+# Optional: If you want to explore the data further, you can create subsets by time intervals or other criteria
+# Example of creating a subset by time
+# traffic_subset <- subset(traffic, Time >= 10 & Time <= 20)  # Adjust the time range as needed
+
+# Example of plotting a subset of data
+# ggplot(traffic_subset, aes(x = Time, y = Vehicles)) + 
+#   geom_line() +
+#   labs(title = "Traffic Volume Over Time (Subset)", x = "Time", y = "Vehicles")
+
+
+```
+
+
+
+
+
+
+```{r}
+#7.a
+# Load the necessary library
+library(readxl)
+
+# Import the dataset from the specified path
+alexa_data <- read_excel("C:/Users/Juralin/OneDrive/Documents/alexa_file.xlsx")
+
+# Get the number of observations (rows) and columns
+dimensions <- dim(alexa_data)
+
+# Display the result
+cat("Number of observations:", dimensions[1], "\n")
+cat("Number of columns:", dimensions[2], "\n")
+
+
+
+
+#6.b
+# Load dplyr package
+library(dplyr)
+
+# Ensure 'verified_reviews' is numeric
+alexa_data$verified_reviews <- as.numeric(alexa_data$verified_reviews)
+
+# Group by the variations and calculate the total verified reviews
+variations_total <- alexa_data %>%
+  group_by(variation) %>%
+  summarize(total = sum(verified_reviews, na.rm = TRUE))
+
+# Display the result
+print(variations_total)
+
+
+
+#6.c
+# Load ggplot2 package
+library(ggplot2)
+
+# Create a bar plot of variations
+ggplot(variations_total, aes(x = variation, y = total)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Total Reviews by Variation",
+       x = "Variation",
+       y = "Total Reviews") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+
+#6.d
+# Ensure 'date' is in Date format
+alexa_data$date <- as.Date(alexa_data$date, format = "%Y-%m-%d")
+
+# Plot the date vs. verified reviews with a line plot
+ggplot(alexa_data, aes(x = date, y = verified_reviews)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Verified Reviews Over Time",
+       x = "Date",
+       y = "Verified Reviews")
+
+
+
+
+
+#6.e
+# Get the mean rating for each variation
+variation_ratings <- alexa_data %>%
+  group_by(variation) %>%
+  summarize(mean_rating = mean(rating, na.rm = TRUE))
+
+# Find the variation with the highest rating
+highest_rating_variation <- variation_ratings %>%
+  filter(mean_rating == max(mean_rating))
+
+# Display the variation with the highest rating
+print(highest_rating_variation)
+
+# Plot the relationship between variations and ratings
+ggplot(variation_ratings, aes(x = variation, y = mean_rating)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Mean Rating by Variation",
+       x = "Variation",
+       y = "Mean Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+```
+
